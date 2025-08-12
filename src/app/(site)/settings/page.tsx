@@ -25,7 +25,12 @@ export default function SettingsPage() {
       <p className="mb-6 text-sm text-muted-foreground">
         API Settings now open in a dedicated window.
       </p>
-      <Button onClick={openApiSettingsWindow}>Open API Settings</Button>
+      <Button
+        onClick={openApiSettingsWindow}
+        leftIcon={<img src="/images/icon_small_edit_button_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
+      >
+        Open API Settings
+      </Button>
     </div>
   )
 }

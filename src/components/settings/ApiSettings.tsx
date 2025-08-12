@@ -51,15 +51,20 @@ function FieldRow({
   field,
   mode,
   onToggle,
+  locked,
 }: {
   field: VisibilityField
   mode: 'view' | 'edit'
   onToggle?: (id: string) => void
+  locked?: boolean
 }) {
+  const isLocked = Boolean(locked)
+  const isVisible = isLocked ? true : field.visible
+
   return (
     <div className="flex items-center justify-between gap-4 py-2">
       <div className="flex items-center gap-3">
-        {mode === 'edit' && (
+        {mode === 'edit' && !isLocked && (
           <input
             aria-label={`${field.label} visibility`}
             type="checkbox"
@@ -70,7 +75,7 @@ function FieldRow({
         )}
         <span className="text-sm">{field.label}</span>
       </div>
-      <StatusPill visible={field.visible} />
+      <StatusPill visible={isVisible} />
     </div>
   )
 }
@@ -86,25 +91,42 @@ export function ApiSettings() {
       sections: [
         {
           id: 'fieldVisibility',
-          title: 'Field Visibility',
+           title: 'Meeting Details',
           fields: [
             { id: 'meetingId', label: 'Meeting ID', visible: true },
-            { id: 'meetingStartTime', label: 'Meeting Start Time', visible: false },
+             { id: 'meetingStartTime', label: 'Meeting Start Time', visible: true },
             { id: 'title', label: 'Title', visible: true },
             { id: 'caseCode', label: 'Case Code', visible: true },
             { id: 'dealCode', label: 'Deal Code', visible: true },
-            { id: 'angle', label: 'Angle', visible: false },
+             { id: 'angle', label: 'Angle', visible: true },
           ],
         },
         {
           id: 'advisor',
           title: 'Advisor',
           fields: [
-            { id: 'advisorFirstName', label: 'Advisor First Name', visible: false },
-            { id: 'advisorMiddleInitial', label: 'Middle Initial', visible: false },
-            { id: 'advisorLastName', label: 'Advisor Last Name', visible: false },
-            { id: 'advisorId', label: 'Advisor ID', visible: false },
-            { id: 'advisorTitle', label: 'Advisor Title', visible: false },
+             { id: 'advisorFirstName', label: 'Advisor First Name', visible: true },
+             { id: 'advisorMiddleInitial', label: 'Middle Initial', visible: true },
+             { id: 'advisorLastName', label: 'Advisor Last Name', visible: true },
+          ],
+        },
+        {
+          id: 'client',
+          title: 'Client',
+          fields: [
+            { id: 'clientFirstName', label: 'Client First Name', visible: true },
+            { id: 'clientMiddleInitial', label: 'Middle Initial', visible: true },
+            { id: 'clientLastName', label: 'Client Last Name', visible: true },
+            { id: 'clientEmail', label: 'Client email', visible: true },
+          ],
+        },
+        {
+          id: 'recordingTranscript',
+          title: 'Recording and Transcript',
+          fields: [
+            { id: 'recordingUrl', label: 'Recording URL', visible: true },
+            { id: 'transcriptionUrlDocx', label: 'Transcription URL - Docx', visible: true },
+            { id: 'transcriptionUrlJson', label: 'Transcription URL - JSON', visible: true },
           ],
         },
       ],
@@ -132,19 +154,30 @@ export function ApiSettings() {
   }
 
   function toggleField(sectionId: string, fieldId: string) {
-    setDraft((prev) => ({
-      ...prev,
-      sections: prev.sections.map((s) =>
-        s.id === sectionId
-          ? {
-              ...s,
-              fields: s.fields.map((f) =>
-                f.id === fieldId ? { ...f, visible: !f.visible } : f
-              ),
-            }
-          : s
-      ),
-    }))
+    setDraft((prev) => {
+      // Prevent toggling of the first five fields in the Meeting Details section
+      if (sectionId === 'fieldVisibility') {
+        const targetSection = prev.sections.find((s) => s.id === sectionId)
+        const fieldIndex = targetSection?.fields.findIndex((f) => f.id === fieldId) ?? -1
+        if (fieldIndex > -1 && fieldIndex < 5) {
+          return prev
+        }
+      }
+
+      return {
+        ...prev,
+        sections: prev.sections.map((s) =>
+          s.id === sectionId
+            ? {
+                ...s,
+                fields: s.fields.map((f) =>
+                  f.id === fieldId ? { ...f, visible: !f.visible } : f
+                ),
+              }
+            : s
+        ),
+      }
+    })
   }
 
   const active = mode === 'edit' ? draft : settings
@@ -159,14 +192,28 @@ export function ApiSettings() {
         <div className="flex items-center gap-2">
           {mode === 'edit' ? (
             <>
-              <Button onClick={save}>Save</Button>
-              <Button variant="secondary" onClick={cancel}>
+              <Button
+                variant="blueSolid"
+                onClick={save}
+                leftIcon={<img src="/images/icon_med_button_check_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
+              >
+                Save Settings
+              </Button>
+              <Button
+                variant="blueOutline"
+                onClick={cancel}
+                leftIcon={<img src="/images/icon_med_close_button_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
+              >
                 Cancel
               </Button>
             </>
           ) : (
-            <Button variant="outline" onClick={startEditing}>
-              Edit Mode
+            <Button
+              variant="blueOutline"
+              onClick={startEditing}
+              leftIcon={<img src="/images/icon_med_edit_button_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
+            >
+              Edit Settings
             </Button>
           )}
         </div>
@@ -224,20 +271,32 @@ export function ApiSettings() {
             </CardHeader>
             <CardContent>
               <div className="divide-y divide-black/10 dark:divide-white/10">
-                {section.fields.map((f) => (
+                {section.fields.map((f, index) => (
                   <FieldRow
                     key={f.id}
                     field={f}
                     mode={mode}
+                    locked={section.id === 'fieldVisibility' && index < 5}
                     onToggle={(id) => toggleField(section.id, id)}
                   />)
                 )}
               </div>
             </CardContent>
-            {mode === 'edit' && (
+            {section.id === 'fieldVisibility' ? (
               <CardFooter className="text-xs text-muted-foreground">
-                Toggle checkboxes to set each field to Visible or Hidden
+                <div className="space-y-1">
+                  {mode === 'edit' && (
+                    <div>Toggle checkboxes to set each field to Visible or Hidden</div>
+                  )}
+                  <div>The first five items are required and always visible.</div>
+                </div>
               </CardFooter>
+            ) : (
+              mode === 'edit' && (
+                <CardFooter className="text-xs text-muted-foreground">
+                  Toggle checkboxes to set each field to Visible or Hidden
+                </CardFooter>
+              )
             )}
           </Card>
         ))}
@@ -249,10 +308,11 @@ export function ApiSettings() {
           <CardContent>
             <div className="space-y-6">
               <Button
-                className=""
+                variant="blueSolid"
                 onClick={() => {
                   // placeholder action for iteration 1
                 }}
+                leftIcon={<img src="/images/icon_med_button_key_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
               >
                 Request API Key
               </Button>

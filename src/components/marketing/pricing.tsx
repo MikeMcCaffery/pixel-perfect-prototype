@@ -27,7 +27,12 @@ export function Pricing() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Choose {t.name}</Button>
+                <Button
+                  className="w-full"
+                  leftIcon={<img src="/images/icon_small_edit_button_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
+                >
+                  Choose {t.name}
+                </Button>
               </CardFooter>
             </Card>
           ))}

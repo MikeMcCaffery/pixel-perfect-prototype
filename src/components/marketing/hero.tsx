@@ -15,7 +15,11 @@ export function Hero() {
             Build and share polished UI prototypes using React, Tailwind and shadcn-style components.
           </p>
           <div className="flex items-center gap-3">
-            <Button>Get started</Button>
+            <Button
+              leftIcon={<img src="/images/icon_small_edit_button_x2.png" alt="" className="h-4 w-4" aria-hidden="true" />}
+            >
+              Get started
+            </Button>
             <Link href="/settings">
               <Button variant="secondary">Live demo</Button>
             </Link>
