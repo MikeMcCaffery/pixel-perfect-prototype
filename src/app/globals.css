@@ -1,5 +1,49 @@
 @import "tailwindcss";
 
+/* Avenir Next font-face declarations using local sources only */
+@font-face {
+  font-family: "Avenir Next";
+  font-style: normal;
+  font-weight: 500;
+  src: local("Avenir Next Medium"), local("AvenirNext-Medium"), local("AvenirNext LT Pro Medium"), local("AvenirNextLTPro-Medium");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  font-style: italic;
+  font-weight: 500;
+  src: local("Avenir Next Medium Italic"), local("AvenirNext-MediumItalic"), local("AvenirNext LT Pro Medium Italic"), local("AvenirNextLTPro-MediumIt");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Avenir Next Demi Bold"), local("AvenirNext-DemiBold"), local("AvenirNext LT Pro Demi"), local("AvenirNextLTPro-Demi");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  font-style: italic;
+  font-weight: 600;
+  src: local("Avenir Next Demi Bold Italic"), local("AvenirNext-DemiBoldItalic"), local("AvenirNext LT Pro Demi Italic"), local("AvenirNextLTPro-DemiIt");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Avenir Next Bold"), local("AvenirNext-Bold"), local("AvenirNext LT Pro Bold"), local("AvenirNextLTPro-Bold");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Avenir Next";
+  font-style: italic;
+  font-weight: 700;
+  src: local("Avenir Next Bold Italic"), local("AvenirNext-BoldItalic"), local("AvenirNext LT Pro Bold Italic"), local("AvenirNextLTPro-BoldIt");
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,8 +52,21 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  /* Prefer Avenir Next; fall back to common system sans-serif fonts */
+  --font-sans: "Avenir Next", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --font-mono: var(--font-geist-mono);
+  /* Cool Gray 50 */
+  --color-cool-gray-50: #F0F0F3;
+  /* Cool Gray 400 */
+  --color-cool-gray-400: #D9D9E0;
+  /* Cool Gray 1000 */
+  --color-cool-gray-1000: #1C2024;
+  /* Green scale */
+  --color-green-100: #C2F1DA; /* Green 100 */
+  --color-green-300: #5CDA9D; /* Green 300 */
+  /* Blue scale for CTAs */
+  --color-blue-600: #0068BC; /* Blue 600 */
+  --color-blue-700: #005397; /* Blue 700 */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +76,34 @@
   }
 }
 
+html {
+  /* Explicitly set base font size: 1em = 16px */
+  font-size: 16px;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  /* Default to Medium (500); Regular (400) is not used */
+  font-weight: 500;
+}
+
+/* Headers and subheads use Bold (700) */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+}
+
+/* Buttons default to Demi Bold (600) */
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  font-weight: 600;
 }
